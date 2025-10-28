@@ -16,23 +16,30 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 - LEDs (Verde, Amarillo, Azul y Rojo)  
   ![LEDs](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMR9j5pzWjeVoVQlWWU9IisQwo6glAOsUMQA&s)
 
+
 - Micro servo MG90S engranaje metálico 180°  
-  ![Servo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQdLuPdRS56_Tu6WHvKJGVViEhb7sNYvywGg&s)
+  ![Servo](}https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQdLuPdRS56_Tu6WHvKJGVViEhb7sNYvywGg&s)
+
 
 - Buzzer  
   ![Buzzer](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQG9PyfofmvZgVc5Gny2paHLSeZX90JJCEzg&s)
 
+
 - Fuente de alimentación para protoboard de 3.3V y 5V  
   ![Fuente](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSrqxswp3uc8CX8LoPVfkUrSbhIbiOG0nSNw&s)
+
 
 - Jumpers  
   ![Jumpers](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhcjdyQGR0MLJuXDBLwBuXAm4XfEY0Kq6WTA&s)
 
+
 - Cables para PROTOBOARD 
   ![Cables](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdPAfFkldShEO_OM7a3oDDtydLM7KDopIACA&s)
 
+
 - Cartón  
   ![Carton](imagenes/carton.png)
+
 
 - Madera  
   ![Madera]("C:\Users\diego\OneDrive\Imágenes\descarga.jpg")
