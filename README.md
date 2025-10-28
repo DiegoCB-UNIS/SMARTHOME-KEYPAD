@@ -1,11 +1,8 @@
 # 🏠 SMARTHOME KEYPAD
 
 ## 📖 Introducción
-En este proyecto se desarrolla una maqueta que simula un teclado electrónico para el hogar.  
-La acción principal es una **cerradura electrónica** que mantiene la casa cerrada y segura, además de incluir otras funcionalidades adicionales.  
-
-La estructura funcional interna del proyecto está implementada en **HAL/STM32**, utilizando un núcleo **STM32**, esencial para el funcionamiento del keypad.  
-A continuación, se muestran los componentes y funcionalidades de la maqueta.
+Este proyecto consiste en la elaboración de una maqueta de un sistema de teclado electrónico para el hogar, cuya función principal es controlar una cerradura electrónica que mantiene la vivienda cerrada y segura. Además, incorpora otras funcionalidades complementarias que enriquecen la simulación.
+La lógica interna del sistema está desarrollada en HAL para STM32, utilizando un núcleo STM32 como elemento esencial para el funcionamiento del keypad. A lo largo de este documento se presentan los componentes empleados, así como las funcionalidades implementadas en la maqueta.
 
 ---
 
