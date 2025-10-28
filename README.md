@@ -1,137 +1,323 @@
-# 🏠 SMARTHOME KEYPAD
+#include "stm32l0xx.h"  // Header para STM32L053R8
+#include <string.h>     // Para strcmp y strcpy
+#include <math.h>       // Para pow en display
 
-## 📖 Introducción
-Este proyecto consiste en la elaboración de una maqueta de un sistema de teclado electrónico para el hogar, cuya función principal es controlar una cerradura electrónica que mantiene la vivienda cerrada y segura. Además, incorpora otras funcionalidades complementarias que enriquecen la simulación.
-La lógica interna del sistema está desarrollada en HAL para STM32, utilizando un núcleo STM32 como elemento esencial para el funcionamiento del keypad. A lo largo de este documento se presentan los componentes empleados, así como las funcionalidades implementadas en la maqueta.
+// Defines para pines (sin cambios)
+#define SERVO_PIN 0      // PA0 (TIM2_CH1)
+#define BUZZER_PIN 1     // PA1 (GPIO_Output, ajustado en IOC)
+#define LED_VERDE_PIN 2  // PA2
+#define LED_ROJO_PIN 3   // PA3
+#define LED_AMARILLO_PIN 4  // PA4
+#define LED_AZUL_PIN 5   // PA5
 
----
+// Pines del keypad (sin cambios)
+#define KEYPAD_R0_PIN 8  // PB8
+#define KEYPAD_R1_PIN 9  // PB9
+#define KEYPAD_R2_PIN 10 // PB10
+#define KEYPAD_R3_PIN 11 // PB11
+#define KEYPAD_C0_PIN 12 // PB12
+#define KEYPAD_C1_PIN 13 // PB13
+#define KEYPAD_C2_PIN 14 // PB14
+#define KEYPAD_C3_PIN 15 // PB15
 
-## 🔧 Componentes y materiales
-- Keypad 4x4  
-  ![Keypad](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiu7-nm8ZKHmDTjpBT0oPEtTW47EiOuK7i0A&s)
+// Pines del display 7 segmentos (sin cambios)
+#define DISP_A_PIN 0  // PB0
+#define DISP_B_PIN 1  // PB1
+#define DISP_C_PIN 2  // PB2
+#define DISP_D_PIN 3  // PB3
+#define DISP_E_PIN 4  // PB4
+#define DISP_F_PIN 5  // PB5
+#define DISP_G_PIN 6  // PB6
+#define DISP_DP_PIN 7 // PB7 (no usado)
+#define DISP_D1_PIN 5 // PC5
+#define DISP_D2_PIN 6 // PC6
+#define DISP_D3_PIN 8 // PC8
+#define DISP_D4_PIN 9 // PC9
 
-  
-- Display de 7 segmentos de 4 dígitos cátodo común  
-  ![Display](https://www.julpin.com.co/inicio/13893-large_default/catodo-comun-display-de-7-segmentos-con-4-digitos.jpg)
+// Constantes (sin cambios)
+#define PASS_LENGTH 4
+#define SERVO_OPEN_ANGLE 90
+#define SERVO_CLOSE_ANGLE 0
+#define BUZZER_DURATION_MS 1000
+#define BLINK_DURATION_MS 500
 
+// Variables globales (sin cambios)
+volatile char entered_pass[PASS_LENGTH + 1] = {0};
+volatile char current_pass[PASS_LENGTH + 1] = "1234";
+volatile uint8_t pass_index = 0;
+volatile uint8_t error_count = 0;
+volatile char keypad_key = 0;  // Cambiado a char para almacenar el carácter directamente
+volatile uint8_t display_digit = 0;
+volatile uint32_t timer_ms = 0;
+volatile uint8_t state = 0;
 
-- LEDs (Verde, Amarillo, Azul y Rojo)  
-  ![LEDs](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMR9j5pzWjeVoVQlWWU9IisQwo6glAOsUMQA&s)
+// Prototipos (sin cambios)
+void GPIO_Init(void);
+void Timer_Init(void);
+void Keypad_Scan(void);
+void Display_Update(void);
+void Buzzer_On(void);
+void Buzzer_Off(void);
+void Servo_SetAngle(uint8_t angle);
+void LED_Toggle(uint8_t pin);
+void LED_On(uint8_t pin);
+void LED_Off(uint8_t pin);
 
+// Tablas (sin cambios)
+const uint8_t digit_segments[10] = {
+    0b00111111, 0b00000110, 0b01011011, 0b01001111,
+    0b01100110, 0b01101101, 0b01111101, 0b00000111,
+    0b01111111, 0b01101111
+};
 
-- Micro servo MG90S engranaje metálico 180°  
-  ![Servo](}https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQdLuPdRS56_Tu6WHvKJGVViEhb7sNYvywGg&s)
+const char keypad_map[4][4] = {
+    {'1', '2', '3', 'A'},
+    {'4', '5', '6', 'B'},
+    {'7', '8', '9', 'C'},
+    {'*', '0', '#', 'D'}
+};
 
+int main(void) {
+    GPIO_Init();
+    Timer_Init();
+    state = 0;
+    while (1) {
+        if (keypad_key != 0) {  // Cambiado de 255 a 0, ya que keypad_key es char
+            switch (state) {
+                case 0:  // IDLE
+                    if (keypad_key >= '0' && keypad_key <= '9') {  // Cambiado para char
+                        state = 1;
+                        entered_pass[pass_index++] = keypad_key;
+                        if (pass_index >= PASS_LENGTH) pass_index = 0;
+                    } else if (keypad_key == 'A') {
+                        if (strcmp((const char *)entered_pass, (const char *)current_pass) == 0) {
+                            LED_On(LED_VERDE_PIN);
+                            LED_On(LED_AZUL_PIN);
+                            Servo_SetAngle(SERVO_OPEN_ANGLE);
+                        } else {
+                            state = 3;
+                            error_count++;
+                            LED_On(LED_ROJO_PIN);
+                            Buzzer_On();
+                        }
+                        pass_index = 0;
+                        memset((char *)entered_pass, 0, sizeof(entered_pass));
+                    } else if (keypad_key == 'B') {
+                        Servo_SetAngle(SERVO_CLOSE_ANGLE);
+                        LED_Off(LED_VERDE_PIN);
+                        LED_Off(LED_AZUL_PIN);
+                    } else if (keypad_key == 'C') {
+                        state = 2;
+                        LED_On(LED_AMARILLO_PIN);  // Agregado para encender inicialmente el LED amarillo
+                    } else if (keypad_key == 'D') {
+                        LED_Toggle(LED_AZUL_PIN);
+                    }
+                    break;
+                case 1:  // ENTER_PASS
+                    if (keypad_key >= '0' && keypad_key <= '9') {
+                        entered_pass[pass_index++] = keypad_key;
+                        if (pass_index >= PASS_LENGTH) pass_index = 0;
+                    } else if (keypad_key == 'A') {
+                        if (strcmp((const char *)entered_pass, (const char *)current_pass) == 0) {
+                            LED_On(LED_VERDE_PIN);
+                            LED_On(LED_AZUL_PIN);
+                            Servo_SetAngle(SERVO_OPEN_ANGLE);
+                        } else {
+                            state = 3;
+                            error_count++;
+                            LED_On(LED_ROJO_PIN);
+                            Buzzer_On();
+                        }
+                        state = 0;
+                        pass_index = 0;
+                        memset((char *)entered_pass, 0, sizeof(entered_pass));
+                    }
+                    break;
+                case 2:  // CHANGE_PASS
+                    if (keypad_key >= '0' && keypad_key <= '9') {
+                        entered_pass[pass_index++] = keypad_key;
+                        if (pass_index >= PASS_LENGTH) pass_index = 0;
+                    } else if (keypad_key == '#') {
+                        strcpy((char *)current_pass, (const char *)entered_pass);
+                        LED_Off(LED_AMARILLO_PIN);
+                        state = 0;
+                        pass_index = 0;
+                        memset((char *)entered_pass, 0, sizeof(entered_pass));
+                    }
+                    break;
+                case 3:  // ERROR
+                    if (keypad_key == '*') {
+                        LED_Off(LED_ROJO_PIN);
+                        Buzzer_Off();
+                        state = 0;
+                    }
+                    break;
+            }
+            keypad_key = 0;  // Reset a 0
+        }
+    }
+}
 
-- Buzzer  
-  ![Buzzer](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQG9PyfofmvZgVc5Gny2paHLSeZX90JJCEzg&s)
+void GPIO_Init(void) {
+    RCC->IOPENR |= RCC_IOPENR_GPIOAEN | RCC_IOPENR_GPIOBEN | RCC_IOPENR_GPIOCEN;
 
+    // Servo (PA0): AF para TIM2_CH1
+    GPIOA->MODER &= ~GPIO_MODER_MODE0;
+    GPIOA->MODER |= GPIO_MODER_MODE0_1;
+    GPIOA->AFR[0] |= (1 << GPIO_AFRL_AFSEL0_Pos);
 
-- Fuente de alimentación para protoboard de 3.3V y 5V  
-  ![Fuente](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSrqxswp3uc8CX8LoPVfkUrSbhIbiOG0nSNw&s)
+    // Buzzer (PA1): GPIO_Output (ahora compatible con IOC ajustado)
+    GPIOA->MODER &= ~GPIO_MODER_MODE1;
+    GPIOA->MODER |= GPIO_MODER_MODE1_0;
+    GPIOA->OTYPER &= ~GPIO_OTYPER_OT_1;
 
+    // LEDs (PA2-PA5): GPIO_Output
+    GPIOA->MODER &= ~(GPIO_MODER_MODE2 | GPIO_MODER_MODE3 | GPIO_MODER_MODE4 | GPIO_MODER_MODE5);
+    GPIOA->MODER |= (GPIO_MODER_MODE2_0 | GPIO_MODER_MODE3_0 | GPIO_MODER_MODE4_0 | GPIO_MODER_MODE5_0);
+    GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_2 | GPIO_OTYPER_OT_3 | GPIO_OTYPER_OT_4 | GPIO_OTYPER_OT_5);
+    GPIOA->OSPEEDR |= (GPIO_OSPEEDR_OSPEED2 | GPIO_OSPEEDR_OSPEED3 | GPIO_OSPEEDR_OSPEED4 | GPIO_OSPEEDR_OSPEED5);
 
-- Jumpers  
-  ![Jumpers](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhcjdyQGR0MLJuXDBLwBuXAm4XfEY0Kq6WTA&s)
+    // Keypad filas (PB8-PB11): GPIO_Input con pull-up
+    GPIOB->MODER &= ~(GPIO_MODER_MODE8 | GPIO_MODER_MODE9 | GPIO_MODER_MODE10 | GPIO_MODER_MODE11);
+    GPIOB->PUPDR |= (GPIO_PUPDR_PUPD8_0 | GPIO_PUPDR_PUPD9_0 | GPIO_PUPDR_PUPD10_0 | GPIO_PUPDR_PUPD11_0);
 
+    // Keypad columnas (PB12-PB15): GPIO_Output
+    GPIOB->MODER &= ~(GPIO_MODER_MODE12 | GPIO_MODER_MODE13 | GPIO_MODER_MODE14 | GPIO_MODER_MODE15);
+    GPIOB->MODER |= (GPIO_MODER_MODE12_0 | GPIO_MODER_MODE13_0 | GPIO_MODER_MODE14_0 | GPIO_MODER_MODE15_0);
+    GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_12 | GPIO_OTYPER_OT_13 | GPIO_OTYPER_OT_14 | GPIO_OTYPER_OT_15);
 
-- Cables para PROTOBOARD 
-  ![Cables](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXwvIxhaZeHFmrgRLLtVUtMs6AYuwFOn90RQ&s)
+    // Display segmentos (PB0-PB7): GPIO_Output
+    GPIOB->MODER &= ~(GPIO_MODER_MODE0 | GPIO_MODER_MODE1 | GPIO_MODER_MODE2 | GPIO_MODER_MODE3 | GPIO_MODER_MODE4 | GPIO_MODER_MODE5 | GPIO_MODER_MODE6 | GPIO_MODER_MODE7);
+    GPIOB->MODER |= (GPIO_MODER_MODE0_0 | GPIO_MODER_MODE1_0 | GPIO_MODER_MODE2_0 | GPIO_MODER_MODE3_0 | GPIO_MODER_MODE4_0 | GPIO_MODER_MODE5_0 | GPIO_MODER_MODE6_0 | GPIO_MODER_MODE7_0);
+    GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_0 | GPIO_OTYPER_OT_1 | GPIO_OTYPER_OT_2 | GPIO_OTYPER_OT_3 | GPIO_OTYPER_OT_4 | GPIO_OTYPER_OT_5 | GPIO_OTYPER_OT_6 | GPIO_OTYPER_OT_7);
 
+    // Display dígitos (PC5, PC6, PC8, PC9): GPIO_Output
+    GPIOC->MODER &= ~(GPIO_MODER_MODE5 | GPIO_MODER_MODE6 | GPIO_MODER_MODE8 | GPIO_MODER_MODE9);
+    GPIOC->MODER |= (GPIO_MODER_MODE5_0 | GPIO_MODER_MODE6_0 | GPIO_MODER_MODE8_0 | GPIO_MODER_MODE9_0);
+    GPIOC->OTYPER &= ~(GPIO_OTYPER_OT_5 | GPIO_OTYPER_OT_6 | GPIO_OTYPER_OT_8 | GPIO_OTYPER_OT_9);
+}
 
-- Cartón  
-  ![Carton](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOhC7FWu7WKiiiBCf0u4jT1PNnZcVza-H3Ig&s)
+void Timer_Init(void) {
+    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN | RCC_APB1ENR_TIM6EN;
+    RCC->APB2ENR |= RCC_APB2ENR_TIM21EN | RCC_APB2ENR_TIM22EN;
 
+    // TIM2: PWM para servo (50Hz, 20ms periodo) - Corregido ARR para 50Hz
+    TIM2->PSC = 159;
+    TIM2->ARR = 1999;  // Cambiado de 19999 a 1999 para 50Hz
+    TIM2->CCMR1 |= TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2;
+    TIM2->CCER |= TIM_CCER_CC1E;
+    TIM2->CR1 |= TIM_CR1_CEN;
 
-- Madera  
-  ![Madera](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU2VMK340plXCnP4Eex79X_o5HqCyhcAyjFA&s)
+    // TIM21: Escaneo keypad (10ms)
+    TIM21->PSC = 1599;
+    TIM21->ARR = 159;
+    TIM21->DIER |= TIM_DIER_UIE;
+    TIM21->CR1 |= TIM_CR1_CEN;
+    NVIC_EnableIRQ(TIM21_IRQn);
 
+    // TIM6: Multiplexado display (5ms)
+    TIM6->PSC = 1599;
+    TIM6->ARR = 79;
+    TIM6->DIER |= TIM_DIER_UIE;
+    TIM6->CR1 |= TIM_CR1_CEN;
+    NVIC_EnableIRQ(TIM6_IRQn);
 
-- NUCLEO-L053R8  
-  ![Nucleo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlGLCEBPol02JLpDwSsxDGpzoGXfdyBGs6JA&s)
+    // TIM22: Temporización general (1ms)
+    TIM22->PSC = 15;
+    TIM22->ARR = 999;
+    TIM22->DIER |= TIM_DIER_UIE;
+    TIM22->CR1 |= TIM_CR1_CEN;
+    NVIC_EnableIRQ(TIM22_IRQn);
+}
 
----
+// Handlers de interrupciones
+void TIM21_IRQHandler(void) {  // Escaneo keypad (cada 10ms)
+    TIM21->SR &= ~TIM_SR_UIF;  // Limpiar flag
+    Keypad_Scan();  // Escanear keypad
+}
 
-## ⚙️ Funcionalidades del Keypad
-1. **Contraseña predeterminada:** `1234`.  
-   - Se ingresa en el keypad y se confirma con el botón `[A]`.
+void TIM6_IRQHandler(void) {  // Multiplexado display (cada 5ms)
+    TIM6->SR &= ~TIM_SR_UIF;  // Limpiar flag
+    Display_Update();  // Actualizar display
+}
 
-2. **Botón [B]:** Cierra el motor servo (mecanismo de la puerta).
+void TIM22_IRQHandler(void) {  // Temporización general (cada 1ms)
+    TIM22->SR &= ~TIM_SR_UIF;  // Limpiar flag
+    timer_ms++;  // Incrementar contador de ms
 
-3. **Botón [C]:** Cambia la contraseña.  
-   - Se enciende/parpadea un LED amarillo.  
-   - Se ingresa la nueva contraseña y se confirma con el botón `[#]`.
+    // Parpadeo LED amarillo en estado CHANGE_PASS (cada 500ms) - Corregido para toggle cada 500ms
+    if (state == 2 && (timer_ms % 500) == 0) {
+        LED_Toggle(LED_AMARILLO_PIN);
+    }
 
-4. **Botón [D]:** Enciende y apaga un LED azul.
+    // Apagar buzzer después de duración en estado ERROR
+    if (state == 3 && timer_ms >= BUZZER_DURATION_MS) {
+        Buzzer_Off();
+        timer_ms = 0;  // Reset para evitar overflow
+    }
+}
 
-5. **Validación de contraseña:**  
-   - Correcta → LED verde + LED azul encendidos + movimiento del servo.  
-   - Incorrecta → LED rojo encendido + buzzer activado (alarma).
+// Funciones auxiliares
+void Keypad_Scan(void) {  // Escaneo con lógica invertida: activar columnas, leer filas
+    static uint8_t col = 0;  // Columna actual a escanear
+    GPIOB->ODR &= ~(1 << (KEYPAD_C0_PIN + col));  // Activar columna actual (low)
 
-6. **Botón [*]:** Apaga todos los componentes (modo reposo).
+    for (uint8_t row = 0; row < 4; row++) {
+        if (!(GPIOB->IDR & (1 << (KEYPAD_R0_PIN + row)))) {  // Fila detectada (low)
+            keypad_key = keypad_map[row][col];  // Asignar carácter directamente
+            break;
+        } else {
+            keypad_key = 0;  // Ninguna tecla presionada
+        }
+    }
 
----
+    GPIOB->ODR |= (1 << (KEYPAD_C0_PIN + col));  // Desactivar columna
+    col = (col + 1) % 4;  // Siguiente columna
+}
 
-## 🏗️ Proceso de elaboración de la maqueta
-1. Corte de cartón resistente para las dimensiones de la casa.  
-   ![Corte](imagenes/corte.png)
+void Display_Update(void) {  // Multiplexado para mostrar error_count en 4 dígitos
+    // Apagar todos los dígitos (cátodo común: high para apagar)
+    GPIOC->ODR |= (1 << DISP_D1_PIN) | (1 << DISP_D2_PIN) | (1 << DISP_D3_PIN) | (1 << DISP_D4_PIN);
 
-2. Uso de cubos de madera como soporte para paredes, techo y suelo.
+    // Calcular valor del dígito actual (de error_count)
+    uint8_t digit_value = (error_count / (uint32_t)pow(10, display_digit)) % 10;
 
-3. Construcción del techo triangular con madera de coco.  
-   - El techo no se unió directamente para permitir accesibilidad al interior.
+    // Encender segmentos para el dígito
+    GPIOB->ODR = digit_segments[digit_value];  // Segmentos A-G
 
-4. Creación del circuito eléctrico.
+    // Encender dígito actual (low para cátodo común)
+    switch (display_digit) {
+        case 0: GPIOC->ODR &= ~(1 << DISP_D1_PIN); break;
+        case 1: GPIOC->ODR &= ~(1 << DISP_D2_PIN); break;
+        case 2: GPIOC->ODR &= ~(1 << DISP_D3_PIN); break;
+        case 3: GPIOC->ODR &= ~(1 << DISP_D4_PIN); break;
+    }
 
-5. Desarrollo del código (ver rama `Codigo-v4`).
+    display_digit = (display_digit + 1) % 4;  // Siguiente dígito
+}
 
-6. Integración del circuito en la maqueta, mostrando LEDs y displays en la superficie.
+void Buzzer_On(void) {  // Encender buzzer (tono simple)
+    GPIOA->ODR |= (1 << BUZZER_PIN);
+}
 
----
+void Buzzer_Off(void) {  // Apagar buzzer
+    GPIOA->ODR &= ~(1 << BUZZER_PIN);
+}
 
-## 💻 Código
-El código final se encuentra en la rama: **`Codigo-v4`**
+void Servo_SetAngle(uint8_t angle) {  // Ajustar ángulo del servo con PWM
+    // Calcular pulse width: 1000us (0°) + (angle * 1000us / 180°)
+    uint16_t pulse = 1000 + (angle * 1000 / 180);  // En ticks (basado en TIM2 ARR=1999, PSC=159 para 1us/tick)
+    TIM2->CCR1 = pulse;  // Duty cycle para TIM2_CH1
+}
 
----
+void LED_On(uint8_t pin) {  // Encender LED específico
+    GPIOA->ODR |= (1 << pin);
+}
 
-## 🔌 Configuración de pines del Nucleo
-| Pin  | Función        |
-|------|----------------|
-| PA0  | TIM2_CH1       |
-| PA1  | GPIO_Output    |
-| PA2  | GPIO_Output    |
-| PA3  | GPIO_Output    |
-| PA4  | GPIO_Output    |
-| PA5  | GPIO_Output    |
-| PB0  | GPIO_Output    |
-| PB1  | GPIO_Output    |
-| PB2  | GPIO_Output    |
-| PB3  | GPIO_Output    |
-| PB4  | GPIO_Output    |
-| PB5  | GPIO_Output    |
-| PB6  | GPIO_Output    |
-| PB7  | GPIO_Output    |
-| PB8  | GPIO_Input     |
-| PB9  | GPIO_Input     |
-| PB10 | GPIO_Input     |
-| PB11 | GPIO_Input     |
-| PB12 | GPIO_Output    |
-| PB13 | GPIO_Output    |
-| PB14 | GPIO_Output    |
-| PB15 | GPIO_Output    |
-| PC5  | GPIO_Output    |
-| PC8  | GPIO_Output    |
-| PC9  | GPIO_Output    |
+void LED_Off(uint8_t pin) {  // Apagar LED específico
+    GPIOA->ODR &= ~(1 << pin);
+}
 
----
-
-## Como se debería usar el SMARTHOME-KEPAD:
-1. La contraseña es de cuatro dígitos. El sistema ya trae una predeterminada "1234". 
-
-2. Cuando uno ingresa la contraseña ya sea la predeterminada o una que el usuario decida actualizar, se ingresa bien, dará una respuesta positiva o se dará un acceso completo del hogar. 
-
-3. En el caso de la contraseña ingresada en el keypad sea incorrecta, el sistema no dará acceso al hogar y se emitirá una alarma de alerta. 
-
-4. Como se había mencionado anteriormente, con el KEYPAD se puede cerrar la puerta en dado caso de que se haya ingresado la contraseña correcta. Y también se puede apagar o encender la luz de la casa. 
-
-5. Si el usuario desea que la casa se cierre y entre en un modo de cierre total también es posible al presionar el botón [*].
+void LED_Toggle(uint8_t pin) {  // Alternar LED específico
+    GPIOA->ODR ^= (1 << pin);
+}
