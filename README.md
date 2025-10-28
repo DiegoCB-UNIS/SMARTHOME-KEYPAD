@@ -38,14 +38,14 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 
 
 - Cartón  
-  ![Carton](imagenes/carton.png)
+  ![Carton](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOhC7FWu7WKiiiBCf0u4jT1PNnZcVza-H3Ig&s)
 
 
 - Madera  
-  ![Madera]("C:\Users\diego\OneDrive\Imágenes\descarga.jpg")
+  ![Madera](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU2VMK340plXCnP4Eex79X_o5HqCyhcAyjFA&s)
 
 - NUCLEO-L053R8  
-  ![Nucleo](imagenes/nucleo.png)
+  ![Nucleo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlGLCEBPol02JLpDwSsxDGpzoGXfdyBGs6JA&s)
 
 ---
 
