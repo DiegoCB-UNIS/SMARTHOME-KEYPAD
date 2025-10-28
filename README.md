@@ -9,9 +9,11 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 ## 🔧 Componentes y materiales
 - Keypad 4x4  
   ![Keypad](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiu7-nm8ZKHmDTjpBT0oPEtTW47EiOuK7i0A&s)
+
   
 - Display de 7 segmentos de 4 dígitos cátodo común  
   ![Display](https://www.julpin.com.co/inicio/13893-large_default/catodo-comun-display-de-7-segmentos-con-4-digitos.jpg)
+
 
 - LEDs (Verde, Amarillo, Azul y Rojo)  
   ![LEDs](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMR9j5pzWjeVoVQlWWU9IisQwo6glAOsUMQA&s)
@@ -34,7 +36,7 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 
 
 - Cables para PROTOBOARD 
-  ![Cables](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdPAfFkldShEO_OM7a3oDDtydLM7KDopIACA&s)
+  ![Cables](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXwvIxhaZeHFmrgRLLtVUtMs6AYuwFOn90RQ&s)
 
 
 - Cartón  
@@ -43,6 +45,7 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 
 - Madera  
   ![Madera](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU2VMK340plXCnP4Eex79X_o5HqCyhcAyjFA&s)
+
 
 - NUCLEO-L053R8  
   ![Nucleo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlGLCEBPol02JLpDwSsxDGpzoGXfdyBGs6JA&s)
