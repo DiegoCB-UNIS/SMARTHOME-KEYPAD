@@ -11,7 +11,7 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
   ![Keypad](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiu7-nm8ZKHmDTjpBT0oPEtTW47EiOuK7i0A&s)
   
 - Display de 7 segmentos de 4 dígitos cátodo común  
-  ![Display](imagenes/display.png)
+  ![Display]([imagenes/display.png](https://laelectronica.com.gt/image/cache/catalog/Productos/Diodos/Matrices%20Y%20Display/Display-7-Segmentos-de-4-Digitos-reloj-1200x1200.jpg))
 
 - LEDs (Verde, Amarillo, Azul y Rojo)  
   ![LEDs](imagenes/leds.png)
