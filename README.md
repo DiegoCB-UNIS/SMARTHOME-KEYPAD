@@ -11,31 +11,31 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
   ![Keypad](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiu7-nm8ZKHmDTjpBT0oPEtTW47EiOuK7i0A&s)
   
 - Display de 7 segmentos de 4 dígitos cátodo común  
-  ![Display](https://laelectronica.com.gt/image/cache/catalog/Productos/Diodos/Matrices%20Y%20Display/Display-7-Segmentos-de-4-Digitos-reloj-1200x1200.jpg)
+  ![Display](https://www.julpin.com.co/inicio/13893-large_default/catodo-comun-display-de-7-segmentos-con-4-digitos.jpg)
 
 - LEDs (Verde, Amarillo, Azul y Rojo)  
-  ![LEDs](imagenes/leds.png)
+  ![LEDs](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMR9j5pzWjeVoVQlWWU9IisQwo6glAOsUMQA&s)
 
 - Micro servo MG90S engranaje metálico 180°  
-  ![Servo](imagenes/servo.png)
+  ![Servo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQdLuPdRS56_Tu6WHvKJGVViEhb7sNYvywGg&s)
 
 - Buzzer  
-  ![Buzzer](imagenes/buzzer.png)
+  ![Buzzer](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQG9PyfofmvZgVc5Gny2paHLSeZX90JJCEzg&s)
 
 - Fuente de alimentación para protoboard de 3.3V y 5V  
-  ![Fuente](imagenes/fuente.png)
+  ![Fuente](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSrqxswp3uc8CX8LoPVfkUrSbhIbiOG0nSNw&s)
 
 - Jumpers  
-  ![Jumpers](imagenes/jumpers.png)
+  ![Jumpers](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhcjdyQGR0MLJuXDBLwBuXAm4XfEY0Kq6WTA&s)
 
-- Cables UTP  
-  ![Cables](imagenes/cables.png)
+- Cables para PROTOBOARD 
+  ![Cables](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdPAfFkldShEO_OM7a3oDDtydLM7KDopIACA&s)
 
 - Cartón  
   ![Carton](imagenes/carton.png)
 
 - Madera  
-  ![Madera](imagenes/madera.png)
+  ![Madera]("C:\Users\diego\OneDrive\Imágenes\descarga.jpg")
 
 - NUCLEO-L053R8  
   ![Nucleo](imagenes/nucleo.png)
