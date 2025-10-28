@@ -1,4 +1,3 @@
-# SMARTHOME-KEYPAD
 # 🏠 SMARTHOME KEYPAD
 
 ## 📖 Introducción
