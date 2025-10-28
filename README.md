@@ -89,11 +89,6 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 
 ---
 
-## ✅ Resultado final
-![Resultado](imagenes/resultado.png)
-
----
-
 ## 💻 Código
 El código final se encuentra en la rama: **`Codigo-v4`**
 
@@ -129,3 +124,14 @@ El código final se encuentra en la rama: **`Codigo-v4`**
 | PC9  | GPIO_Output    |
 
 ---
+
+##Como se debería usar el KEPAD:
+1. La contraseña es de cuatro dígitos. El sistema ya trae una predeterminada "1234". 
+
+2. Cuando uno ingresa la contraseña ya sea la predeterminada o una que el usuario decida actualizar, se ingresa bien, dará una respuesta positiva o se dará un acceso completo del hogar. 
+
+3. En el caso de la contraseña ingresada en el keypad sea incorrecta, el sistema no dará acceso al hogar y se emitirá una alarma de alerta. 
+
+4. Como se había mencionado anteriormente, con el KEYPAD se puede cerrar la puerta en dado caso de que se haya ingresado la contraseña correcta. Y también se puede apagar o encender la luz de la casa. 
+
+5. Si el usuario desea que la casa se cierre y entre en un modo de cierre total también es posible al presionar el botón [*].
