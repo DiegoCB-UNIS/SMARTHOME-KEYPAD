@@ -125,7 +125,7 @@ El código final se encuentra en la rama: **`Codigo-v4`**
 
 ---
 
-## Como se debería usar el KEPAD:
+## Como se debería usar el SMARTHOME-KEPAD:
 1. La contraseña es de cuatro dígitos. El sistema ya trae una predeterminada "1234". 
 
 2. Cuando uno ingresa la contraseña ya sea la predeterminada o una que el usuario decida actualizar, se ingresa bien, dará una respuesta positiva o se dará un acceso completo del hogar. 
