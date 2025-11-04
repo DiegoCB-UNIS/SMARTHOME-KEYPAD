@@ -74,7 +74,6 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 
 ## 🏗️ Proceso de elaboración de la maqueta
 1. Corte de cartón resistente para las dimensiones de la casa.  
-   ![Corte](imagenes/corte.png)
 
 2. Uso de cubos de madera como soporte para paredes, techo y suelo.
 
@@ -83,14 +82,14 @@ La lógica interna del sistema está desarrollada en HAL para STM32, utilizando 
 
 4. Creación del circuito eléctrico.
 
-5. Desarrollo del código (ver rama `Codigo-v4`).
+5. Desarrollo del código (ver rama `Codigo-v5`).
 
 6. Integración del circuito en la maqueta, mostrando LEDs y displays en la superficie.
 
 ---
 
 ## 💻 Código
-El código final se encuentra en la rama: **`Codigo-v4`**
+El código final se encuentra en la rama: **`Codigo-v5`**
 
 ---
 
