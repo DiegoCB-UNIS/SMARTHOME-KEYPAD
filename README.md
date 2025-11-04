@@ -140,4 +140,4 @@ El código final se encuentra en la rama: **`Codigo-v4`**
 
 
 ## Resultado final fisico:
-![Casa](./Descargas/Casa.jpg)
+![Casa](Casa.jpg)
