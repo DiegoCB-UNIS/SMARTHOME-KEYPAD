@@ -1,35 +1,12 @@
 # Codigo version 5 (Final)
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Smart Home Keypad with STM32L053R8
-  *                  - Keypad 4x4: Rows PB0-PB3 (EXTI), Columns PB4-PB7
-  *                  - Display 7-seg 4 digits: Segments PA6-PA13, Digits PB8-PB11
-  *                  - LEDs: Green PA2, Red PA3, Yellow PA4, Blue PA5
-  *                  - Buzzer: PA1
-  *                  - Servo: PA0 (TIM2_CH1 PWM)
-  *                  - Timers: TIM2 (PWM servo), TIM6 (keypad scan), TIM21 (display multiplex)
-  ******************************************************************************
-  */
-/* USER CODE END Header */
 
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-/* Private typedef -----------------------------------------------------------*/
-
-/* Private define ------------------------------------------------------------*/
-
-/* Private macro -------------------------------------------------------------*/
-
-/* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
 
-/* USER CODE BEGIN PV */
 TIM_HandleTypeDef htim6;   // Escaneo del keypad
 TIM_HandleTypeDef htim21;  // Display multiplexacion
 
@@ -104,22 +81,15 @@ void update_display(void);
 void set_segments(uint8_t digit);
 void buzzer_on(void);
 void buzzer_off(void);
-/* USER CODE END PV */
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
-/* USER CODE BEGIN PFP */
+
 static void MX_TIM6_Init(void);
 static void MX_TIM21_Init(void);
-/* USER CODE END PFP */
 
-/* Private user code ---------------------------------------------------------*/
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
   HAL_Init();
@@ -150,10 +120,6 @@ int main(void)
   }
 }
 
-/**
-  * @brief System Clock Configuration (MSI 2.097MHz)
-  * @retval None
-  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -177,11 +143,6 @@ void SystemClock_Config(void)
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
 }
 
-/**
-  * @brief TIM2 Initialization (PWM for servo, 50Hz)
-  * @param None
-  * @retval None
-  */
 static void MX_TIM2_Init(void)
 {
   __HAL_RCC_TIM2_CLK_ENABLE();
@@ -209,11 +170,6 @@ static void MX_TIM2_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
-/**
-  * @brief TIM6 Initialization (Keypad scanning, 1ms tick)
-  * @param None
-  * @retval None
-  */
 static void MX_TIM6_Init(void)
 {
   __HAL_RCC_TIM6_CLK_ENABLE();
@@ -227,11 +183,6 @@ static void MX_TIM6_Init(void)
   HAL_NVIC_EnableIRQ(TIM6_IRQn);
 }
 
-/**
-  * @brief TIM21 Initialization (Display multiplexing, 1ms tick)
-  * @param None
-  * @retval None
-  */
 static void MX_TIM21_Init(void)
 {
   __HAL_RCC_TIM21_CLK_ENABLE();
@@ -245,11 +196,6 @@ static void MX_TIM21_Init(void)
   HAL_NVIC_EnableIRQ(TIM21_IRQn);
 }
 
-/**
-  * @brief GPIO Initialization
-  * @param None
-  * @retval None
-  */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -506,36 +452,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   if (key) process_key(key);
 }
 
-/* USER CODE END 4 */
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+
 }
-#endif /* USE_FULL_ASSERT */
+#endif 
