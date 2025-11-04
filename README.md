@@ -135,3 +135,9 @@ El código final se encuentra en la rama: **`Codigo-v4`**
 4. Como se había mencionado anteriormente, con el KEYPAD se puede cerrar la puerta en dado caso de que se haya ingresado la contraseña correcta. Y también se puede apagar o encender la luz de la casa. 
 
 5. Si el usuario desea que la casa se cierre y entre en un modo de cierre total también es posible al presionar el botón [*].
+
+---
+
+
+## Resultado final fisico:
+![Casa](https://drive.google.com/file/d/1E9UquVf9wdWqN5wftx2RTZtNLa8PKExM/view?usp=drive_link)
