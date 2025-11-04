@@ -140,4 +140,4 @@ El código final se encuentra en la rama: **`Codigo-v4`**
 
 
 ## Resultado final fisico:
-![Casa](https://drive.google.com/file/d/1E9UquVf9wdWqN5wftx2RTZtNLa8PKExM/view?usp=drive_link)
+![Casa](./Descargas/Casa.jpg)
