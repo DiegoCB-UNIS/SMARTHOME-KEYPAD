@@ -141,3 +141,5 @@ El código final se encuentra en la rama: **`Codigo-v4`**
 
 ## Resultado final fisico:
 ![Casa](Casa.jpg)
+![Casa2](Casa2.jpg)
+![Casa3](Casa3.jpg)
