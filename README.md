@@ -151,28 +151,42 @@ La maquina es una expendedora de bebidas. En la cual es de sistema electronico u
 1. Entradas:
 //bebidas
 >Agua = Q15
+
 >Agua mineral = Q8
+
 >Cafe frio = Q7
+
 >Soda = Q5
+
 >chocolatada = Q3
 
 >Cerveza = Q12
 
 //Funciones ordinarias
 >Boton
+
 >Puerta
 
 2. Estados:
 >S0 = Q0
+
 >S1 = Q0.25
+
 >S2 = Q0.50
+
 >S3 = Q1
+
 >S4 = Q5
+
 >S6 = Q10
+
 >S7 = Q20
 
 3. Salidas
 >Dinero_acumulado //El total del dinero que se agrega al sistema de la maquina
+
 >Dinero_invalido //El dinero que no permite si es inferior al precio de la bebida
+
 >Dinero_retorno //El dinero que se puede usar para un bebida de precio inferior o de una estado anterior
+
 >Producto //La bebida a entregar
