@@ -155,6 +155,7 @@ La maquina es una expendedora de bebidas. En la cual es de sistema electronico u
 >Cafe frio = Q7
 >Soda = Q5
 >chocolatada = Q3
+
 >Cerveza = Q12
 
 //Funciones ordinarias
