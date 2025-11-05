@@ -1,144 +1,171 @@
-# 🏠 SMARTHOME KEYPAD
+# Basys3
 
-## 📖 Introducción
-Este proyecto consiste en la elaboración de una maqueta de un sistema de teclado electrónico para el hogar, cuya función principal es controlar una cerradura electrónica que mantiene la vivienda cerrada y segura. Además, incorpora otras funcionalidades complementarias que enriquecen la simulación.
-La lógica interna del sistema está desarrollada en HAL para STM32, utilizando un núcleo STM32 como elemento esencial para el funcionamiento del keypad. A lo largo de este documento se presentan los componentes empleados, así como las funcionalidades implementadas en la maqueta.
+## Archivo FSM
+module FSM (
+    input  logic clk,
+    input  logic reset_n,
+    input  logic coin025,
+    input  logic coin050,
+    input  logic coin1,
+    input  logic coin5,
+    input  logic coin10,
+    input  logic coin20,
+    input  logic sel_agua,
+    input  logic sel_agua_mineral,
+    input  logic sel_cafe_frio,
+    input  logic sel_soda,
+    input  logic sel_chocolatada,
+    input  logic sel_cerveza,
+    output logic [7:0] dinero_acumulado,
+    output logic dinero_invalido,
+    output logic dinero_retorno,
+    output logic producto
+);
+    typedef enum logic [2:0] {
+        S0, S1, S2, S3, S4, S5, S6
+    } state_t;
 
----
+    state_t estado, siguiente_estado;
+    logic [7:0] total;
+    always_ff @(posedge clk or negedge reset_n) begin
+        if (!reset_n)
+            estado <= S0;
+        else
+            estado <= siguiente_estado;
+    end
+    always_comb begin
+        siguiente_estado = estado;
+        case (estado)
+            S0: if (coin025) siguiente_estado = S1;
+                else if (coin050) siguiente_estado = S2;
+                else if (coin1) siguiente_estado = S3;
+                else if (coin5) siguiente_estado = S4;
+                else if (coin10) siguiente_estado = S5;
+                else if (coin20) siguiente_estado = S6;
+            default: siguiente_estado = estado;
+        endcase
+    end
 
-## 🔧 Componentes y materiales
-- Keypad 4x4  
-  ![Keypad](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiu7-nm8ZKHmDTjpBT0oPEtTW47EiOuK7i0A&s)
+    always_ff @(posedge clk or negedge reset_n) begin
+        if (!reset_n)
+            total <= 0;
+        else begin
+            case (estado)
+                S1: total <= 25;
+                S2: total <= 50;
+                S3: total <= 100;
+                S4: total <= 500;
+                S5: total <= 1000;
+                S6: total <= 2000;
+                default: total <= 0;
+            endcase
+        end
+    end
 
-  
-- Display de 7 segmentos de 4 dígitos cátodo común  
-  ![Display](https://www.julpin.com.co/inicio/13893-large_default/catodo-comun-display-de-7-segmentos-con-4-digitos.jpg)
-
-
-- LEDs (Verde, Amarillo, Azul y Rojo)  
-  ![LEDs](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMR9j5pzWjeVoVQlWWU9IisQwo6glAOsUMQA&s)
-
-
-- Micro servo MG90S engranaje metálico 180°  
-  ![Servo](}https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQdLuPdRS56_Tu6WHvKJGVViEhb7sNYvywGg&s)
-
-
-- Buzzer  
-  ![Buzzer](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQG9PyfofmvZgVc5Gny2paHLSeZX90JJCEzg&s)
-
-
-- Fuente de alimentación para protoboard de 3.3V y 5V  
-  ![Fuente](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSrqxswp3uc8CX8LoPVfkUrSbhIbiOG0nSNw&s)
-
-
-- Jumpers  
-  ![Jumpers](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhcjdyQGR0MLJuXDBLwBuXAm4XfEY0Kq6WTA&s)
-
-
-- Cables para PROTOBOARD 
-  ![Cables](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXwvIxhaZeHFmrgRLLtVUtMs6AYuwFOn90RQ&s)
-
-
-- Cartón  
-  ![Carton](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOhC7FWu7WKiiiBCf0u4jT1PNnZcVza-H3Ig&s)
-
-
-- Madera  
-  ![Madera](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU2VMK340plXCnP4Eex79X_o5HqCyhcAyjFA&s)
-
-
-- NUCLEO-L053R8  
-  ![Nucleo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlGLCEBPol02JLpDwSsxDGpzoGXfdyBGs6JA&s)
-
----
-
-## ⚙️ Funcionalidades del Keypad
-1. **Contraseña predeterminada:** `1234`.  
-   - Se ingresa en el keypad y se confirma con el botón `[A]`.
-
-2. **Botón [B]:** Cierra el motor servo (mecanismo de la puerta).
-
-3. **Botón [C]:** Cambia la contraseña.  
-   - Se enciende/parpadea un LED amarillo.  
-   - Se ingresa la nueva contraseña y se confirma con el botón `[#]`.
-
-4. **Botón [D]:** Enciende y apaga un LED azul.
-
-5. **Validación de contraseña:**  
-   - Correcta → LED verde + LED azul encendidos + movimiento del servo.  
-   - Incorrecta → LED rojo encendido + buzzer activado (alarma).
-
-6. **Botón [*]:** Apaga todos los componentes (modo reposo).
-
----
-
-## 🏗️ Proceso de elaboración de la maqueta
-1. Corte de cartón resistente para las dimensiones de la casa.  
-
-2. Uso de cubos de madera como soporte para paredes, techo y suelo.
-
-3. Construcción del techo triangular con madera de coco.  
-   - El techo no se unió directamente para permitir accesibilidad al interior.
-
-4. Creación del circuito eléctrico.
-
-5. Desarrollo del código (ver rama `Codigo-v5`).
-
-6. Integración del circuito en la maqueta, mostrando LEDs y displays en la superficie.
-
----
-
-## 💻 Código
-El código final se encuentra en la rama: **`Codigo-v5`**
-
----
-
-## 🔌 Configuración de pines del Nucleo
-| Pin  | Función        |
-|------|----------------|
-| PA0  | TIM2_CH1       |
-| PA1  | GPIO_Output    |
-| PA2  | GPIO_Output    |
-| PA3  | GPIO_Output    |
-| PA4  | GPIO_Output    |
-| PA5  | GPIO_Output    |
-| PB0  | GPIO_Output    |
-| PB1  | GPIO_Output    |
-| PB2  | GPIO_Output    |
-| PB3  | GPIO_Output    |
-| PB4  | GPIO_Output    |
-| PB5  | GPIO_Output    |
-| PB6  | GPIO_Output    |
-| PB7  | GPIO_Output    |
-| PB8  | GPIO_Input     |
-| PB9  | GPIO_Input     |
-| PB10 | GPIO_Input     |
-| PB11 | GPIO_Input     |
-| PB12 | GPIO_Output    |
-| PB13 | GPIO_Output    |
-| PB14 | GPIO_Output    |
-| PB15 | GPIO_Output    |
-| PC5  | GPIO_Output    |
-| PC8  | GPIO_Output    |
-| PC9  | GPIO_Output    |
-
----
-
-## Como se debería usar el SMARTHOME-KEPAD:
-1. La contraseña es de cuatro dígitos. El sistema ya trae una predeterminada "1234". 
-
-2. Cuando uno ingresa la contraseña ya sea la predeterminada o una que el usuario decida actualizar, se ingresa bien, dará una respuesta positiva o se dará un acceso completo del hogar. 
-
-3. En el caso de la contraseña ingresada en el keypad sea incorrecta, el sistema no dará acceso al hogar y se emitirá una alarma de alerta. 
-
-4. Como se había mencionado anteriormente, con el KEYPAD se puede cerrar la puerta en dado caso de que se haya ingresado la contraseña correcta. Y también se puede apagar o encender la luz de la casa. 
-
-5. Si el usuario desea que la casa se cierre y entre en un modo de cierre total también es posible al presionar el botón [*].
-
----
+    assign dinero_acumulado = total[7:0];
+    assign producto = (sel_agua && total >= 15) || (sel_cerveza && total >= 10); 
+endmodule
 
 
-## Resultado final fisico:
-![Casa](Casa.jpg)
-![Casa2](Casa2.jpg)
-![Casa3](Casa3.jpg)
+
+
+## Display
+module Display (
+    input  logic clk,
+    input  logic reset_n,
+    input  logic [15:0] valor,
+    output logic [3:0] an,
+    output logic [6:0] seg
+);
+    logic [1:0] sel;
+    logic [3:0] digito;
+
+    always_ff @(posedge clk or negedge reset_n) begin
+        if (!reset_n)
+            sel <= 0;
+        else
+            sel <= sel + 1;
+    end
+
+    always_comb begin
+        case (sel)
+            2'b00: digito = valor[3:0];
+            2'b01: digito = valor[7:4];
+            2'b10: digito = valor[11:8];
+            2'b11: digito = valor[15:12];
+        endcase
+    end
+
+    display_decoder decoder (.num(digito), .seg(seg));
+    assign an = ~(4'b0001 << sel);
+endmodule
+
+
+
+
+
+## Decodificación para los segmentos
+module Decod(
+    input  logic [3:0] num,
+    output logic [6:0] seg
+);
+    always_comb begin
+        case (num)
+            4'h0: seg = 7'b1000000;
+            4'h1: seg = 7'b1111001;
+            4'h2: seg = 7'b0100100;
+            4'h3: seg = 7'b0110000;
+            4'h4: seg = 7'b0011001;
+            4'h5: seg = 7'b0010010;
+            4'h6: seg = 7'b0000010;
+            4'h7: seg = 7'b1111000;
+            4'h8: seg = 7'b0000000;
+            4'h9: seg = 7'b0010000;
+            default: seg = 7'b1111111;
+        endcase
+    end
+endmodule
+
+
+
+
+
+## Modulos para basys
+module Modulos(
+    input  logic CLK100MHZ,
+    input  logic [15:0] SW,
+    input  logic [3:0] BTN,
+    output logic [6:0] SEG,
+    output logic [3:0] AN
+);
+    logic reset_n = ~BTN[0];
+    logic [7:0] dinero;
+    logic [15:0] valor_display;
+
+    fsm_maquina_expendedora fsm(
+        .clk(CLK100MHZ),
+        .reset_n(reset_n),
+        .coin025(SW[0]),
+        .coin050(SW[1]),
+        .coin1(SW[2]),
+        .coin5(SW[3]),
+        .coin10(SW[4]),
+        .coin20(SW[5]),
+        .sel_agua(SW[6]),
+        .sel_agua_mineral(SW[7]),
+        .sel_cafe_frio(SW[8]),
+        .sel_soda(SW[9]),
+        .sel_chocolatada(SW[10]),
+        .sel_cerveza(SW[11]),
+        .dinero_acumulado(dinero)
+    );
+
+    assign valor_display = {8'd0, dinero};
+    mux_display display (
+        .clk(CLK100MHZ),
+        .reset_n(reset_n),
+        .valor(valor_display),
+        .an(AN),
+        .seg(SEG)
+    );
+endmodule
