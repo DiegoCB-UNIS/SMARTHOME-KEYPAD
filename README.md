@@ -190,3 +190,8 @@ La maquina es una expendedora de bebidas. En la cual es de sistema electronico u
 >Dinero_retorno //El dinero que se puede usar para un bebida de precio inferior o de una estado anterior
 
 >Producto //La bebida a entregar
+
+
+---
+## Video para el ejecicio 2
+https://youtu.be/iqAP3T4yrZQ
