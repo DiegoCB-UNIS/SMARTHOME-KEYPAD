@@ -564,3 +564,10 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+
+
+
+
+## Nota importante:
+El problema siguie siendo el mismo del anterior, cuando le doy a ejecutar la aplicación, sale que el target no fue detectado o encontrado. Estuve investigando las posibles causas para ver a que se debe eso. Estuve primero revisando las configuraciones de los pines cada uno. Tambien el codigo y los posibles errores que podria tener. Pero por el momento todo esta correcto. Eh realizado un promt de prueba para ver si efectivamente no hay una comunicación entre la placa y el dispositovo PC. No hubo ningun error pero sin embargo aun sigue dando problema de comunicacion entre el target. Al principio tambien podria ser que algunos de los componentes o incluso el USB no funcionen bien. Eh visto que ese problema es muy comun al operar con un STM32. Pero a medida que avanzaba no encontrara una solución al aplicar acciones opcionables para que el codigo se ejecute en la maqueta. Ya que el codigo funciona correctamente pero por alguna razon no se esta comunicando con el nucleo. 
