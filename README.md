@@ -1,7 +1,9 @@
 # 🏠 SMARTHOME KEYPAD con funcionalida extra y funcion de interrupciones
 
 El cosdigo es el mismo solo que ahora se añadio una función extra y ahora este codigo opera ahora bajo interrupciones. La funcionalidad extra seria que antes el display mostraba un conteo de cuantas veces se ingresaba la contraseña equivocada. Esa función aun lo sigue teniendo pero ahora aparte de mostrar ese conteo eh incluso despues, ahora se muestra la contrasela que se ingreso. Recordando que la contraseña es de cuatro digitos. Tomando en cuenta que el display de 7 segementos tambien es de cuatro digitos y por lo tanto solo cuatro digitos como maximo mostrara. En el momento que se ingrese la contraseña al presionar los botones del keypad, por ejemplo: si la contraseña actual es "1234", entoces se preciona los botons con los respectivos numeros. Y al hacerlo se mostrara el "1234" en el display de esta manera: 1.2.3.4. 
-Y uno vez que se presiona el boton [A] que es el que se encarga de ingresar esa contraseña ingresada al sistema, automaticamente se borrara los numeros mostrados en el display para volver a estar en su funcion principal de contar las veces que se ingreso la contraseña incorrecta. Ahora el codigo vendria siendo el siguiente con sus respectivas modificaciones para llevar a cabo las funcionalidades nuevas:
+Y uno vez que se presiona el boton [A] que es el que se encarga de ingresar esa contraseña ingresada al sistema, automaticamente se borrara los numeros mostrados en el display para volver a estar en su funcion principal de contar las veces que se ingreso la contraseña incorrecta.
+
+Ahora con las interrupciones, es que ahora el problema se ejecuta por cada vez que un interrupcion se da. Antes se usaba un timer para escanear los puertos del keypad. Pero ahora se usan interrupciones al momento de utilizar o ingresar un boton en el keypad. Ahora el codigo vendria siendo el siguiente con sus respectivas modificaciones para llevar a cabo las funcionalidades nuevas:
 
 
 
